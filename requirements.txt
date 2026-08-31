@@ -1,2 +1,5 @@
 pandas==2.2.3
 numpy==2.1.0
+requests==2.34.2
+click==8.5.0
+SQLAlchemy==2.0.52
