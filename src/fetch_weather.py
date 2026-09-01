@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 
 
 
-def fetch_weather_data(dburl, url):
+def fetch_weather_data(dburl: str, url: str) -> None:
     """
     This function is meant to keep track of an archive of the weather data as provided by the open-meteo.com archive API endpoint. It keeps track of the last 2 years of available weather data and updates the database accordingly.
     """
@@ -38,15 +38,17 @@ def fetch_weather_data(dburl, url):
         db.add_weather_data(data)
 
         # Print a confirmation message indicating successful insertion
-        print(f"Inserted data from Open Meteo into the database.")
+        print("Inserted data from Open Meteo into the database.")
     else:
         # Print an error message if the data retrieval failed
         print("Failed to retrieve data.")
 
+        
+
 
 @click.command()
 @click.option('-d', '--dburl', required=True, help='Database URL')
-def main(dburl):
+def main(dburl: str) -> None:
     """
      URL to fetch weather data from Open Meteo API
     """

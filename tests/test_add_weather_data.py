@@ -50,7 +50,7 @@ def test_fetch_weather_data(tmp_path: pytest.TempPathFactory, monkeypatch: pytes
     assert set(df["temperature_2m"]) == {3.4, 3.1}
 
     # test time column is converted to datetime
-    assert type(df["time"].iloc[0]) == pd.Timestamp
+    assert isinstance(df["time"].iloc[0], pd.Timestamp)
 
 
 
