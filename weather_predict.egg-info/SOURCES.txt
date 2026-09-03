@@ -1,0 +1,14 @@
+pyproject.toml
+requirements.txt
+src/__init__.py
+src/fetch_weather.py
+src/main.py
+src/setup_db.py
+src/train.py
+tests/test_add_weather_data.py
+tests/test_table_creation.py
+weather_predict.egg-info/PKG-INFO
+weather_predict.egg-info/SOURCES.txt
+weather_predict.egg-info/dependency_links.txt
+weather_predict.egg-info/requires.txt
+weather_predict.egg-info/top_level.txt

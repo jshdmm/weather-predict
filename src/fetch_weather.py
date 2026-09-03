@@ -1,5 +1,5 @@
 import click
-from setup_db import weatherDB
+from src.setup_db import weatherDB
 import pandas as pd
 import requests
 from datetime import datetime

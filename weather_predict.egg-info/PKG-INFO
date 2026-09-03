@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: weather-predict
+Version: 0.1.0
+Requires-Python: >=3.12
+Requires-Dist: pandas==2.2.3
+Requires-Dist: numpy==2.1.0
+Requires-Dist: requests==2.34.2
+Requires-Dist: click==8.5.0
+Requires-Dist: SQLAlchemy==2.0.52
+Requires-Dist: python-dateutil==2.9.0.post0
+Requires-Dist: scikit-learn==1.9.0
+Requires-Dist: lightgbm==4.6.0
+Requires-Dist: matplotlib==3.11.1

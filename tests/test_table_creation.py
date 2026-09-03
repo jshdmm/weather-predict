@@ -1,5 +1,5 @@
 from sqlalchemy import inspect
-from setup_db import weatherDB, WeatherData
+from src.setup_db import weatherDB, WeatherData
 
 
 def test_table_creation(tmp_path):

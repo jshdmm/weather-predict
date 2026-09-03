@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 import requests
-from fetch_weather import fetch_weather_data
-from setup_db import weatherDB
+from src.fetch_weather import fetch_weather_data
+from src.setup_db import weatherDB
 
 ############ TEST 1: Test for correct db insertion ###############
 """
