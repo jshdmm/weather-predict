@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import lightgbm as lgb
 from src.setup_db import weatherDB
+from src.fetch_weather import get_archive
+import pickle
 
 
 def train_model(dburl: str, period, seed) -> pd.DataFrame:
@@ -10,6 +12,9 @@ def train_model(dburl: str, period, seed) -> pd.DataFrame:
     # get database and data
     db = weatherDB(dburl)
     df = db.get_weather_data()
+
+    # get period, start, end date, and corresponding archive URL
+    archive_info = get_archive(period)
 
     
 
@@ -47,13 +52,20 @@ def train_model(dburl: str, period, seed) -> pd.DataFrame:
     mae = np.mean(np.abs(preds - y_test))
     print(f"Test MAE: {mae:.2f} °C")
 
-
+    # save model results as dict
     results = {
         "mae": mae,
         "model": model,
+        "period": period,
+        "start_date": archive_info["start_date"],
+        "end_date": archive_info["end_date"],
         "X_test": X_test,
         "y_test": y_test,
     }
+
+    # save results
+    with open (f"results/model_{archive_info['start_date']}_{archive_info['end_date']}.pkl", "wb") as f:
+        pickle.dump(model, f)
 
     return results
 

@@ -44,7 +44,7 @@ def fetch_weather_data(dburl: str, url: str) -> None:
         print("Failed to retrieve data.")
 
 
-def build_archive_url(period: int) -> str:
+def get_archive(period: int) -> dict:
     """
     This function constructs the URL to fetch weather data from the Open Meteo API for the last 2 years.
 
@@ -67,7 +67,14 @@ def build_archive_url(period: int) -> str:
     # Construct the URL with the specified parameters
     url = f"https://archive-api.open-meteo.com/v1/era5?latitude=52.4676&longitude=13.4020&timeformat=unixtime&start_date={archive_start}&end_date={archive_end}&hourly=temperature_2m,relativehumidity_2m,rain,snowfall,windspeed_10m,winddirection_10m,soil_temperature_0_to_7cm"
 
-    return url
+    archive_dict = {
+        "url": url,
+        "start_date": archive_start,
+        "end_date": archive_end
+    }
+
+
+    return archive_dict
 
         
 
@@ -78,8 +85,8 @@ def build_archive_url(period: int) -> str:
 def main(dburl: str, period: int) -> None:
 
     # get archive URL based on the specified period
-    url = build_archive_url(period)   
-    fetch_weather_data(dburl, url)
+    archive_info = get_archive(period)
+    fetch_weather_data(dburl, archive_info["url"])
 
 if __name__ == '__main__':
     # Execute the main function when the script is run directly
