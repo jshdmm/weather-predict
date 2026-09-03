@@ -43,25 +43,42 @@ def fetch_weather_data(dburl: str, url: str) -> None:
         # Print an error message if the data retrieval failed
         print("Failed to retrieve data.")
 
+
+def build_archive_url(period: int) -> str:
+    """
+    This function constructs the URL to fetch weather data from the Open Meteo API for the last 2 years.
+
+    args:
+        period (int): The number of days to look back for the weather data. Default is 730 days (2 years).
+    returns:
+        str: The constructed URL for fetching weather data.
+
+    """
+
+    # get Berlin's timezone and today's date
+    berlin = ZoneInfo("Europe/Berlin")
+    
+    # end point of the archive, e.g. today
+    archive_end = datetime.now(berlin).date()
+
+    # archive time window
+    archive_start = archive_end - relativedelta(days=period)
+
+    # Construct the URL with the specified parameters
+    url = f"https://archive-api.open-meteo.com/v1/era5?latitude=52.4676&longitude=13.4020&timeformat=unixtime&start_date={archive_start}&end_date={archive_end}&hourly=temperature_2m,relativehumidity_2m,rain,snowfall,windspeed_10m,winddirection_10m,soil_temperature_0_to_7cm"
+
+    return url
+
         
 
 
 @click.command()
 @click.option('-d', '--dburl', required=True, help='Database URL')
-def main(dburl: str) -> None:
-    """
-     URL to fetch weather data from Open Meteo API
-    """
+@click.option('-p', '--period', default=730, type=int, help='Archive period in days')
+def main(dburl: str, period: int) -> None:
 
-    # get Berlin's timezone and today's date
-    berlin = ZoneInfo("Europe/Berlin")
-    today = datetime.now(berlin).date()
-
-    # two years ago
-    two_years_ago = today - relativedelta(years=2)
-
-
-    url = f"https://archive-api.open-meteo.com/v1/era5?latitude=52.4676&longitude=13.4020&timeformat=unixtime&start_date={two_years_ago}&end_date={today}&hourly=temperature_2m,relativehumidity_2m,rain,snowfall,windspeed_10m,winddirection_10m,soil_temperature_0_to_7cm"
+    # get archive URL based on the specified period
+    url = build_archive_url(period)   
     fetch_weather_data(dburl, url)
 
 if __name__ == '__main__':
