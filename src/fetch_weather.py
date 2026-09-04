@@ -70,7 +70,8 @@ def get_archive(period: int) -> dict:
     archive_dict = {
         "url": url,
         "start_date": archive_start,
-        "end_date": archive_end
+        "end_date": archive_end,
+        "period": period
     }
 
 
@@ -91,3 +92,5 @@ def main(dburl: str, period: int) -> None:
 if __name__ == '__main__':
     # Execute the main function when the script is run directly
     main()
+
+
