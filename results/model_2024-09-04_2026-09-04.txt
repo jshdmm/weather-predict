@@ -1,0 +1,1 @@
+LightGBM Model trained on data from 2024-09-04 to 2026-09-04 in a period of 730 days was trained with a test MAE of 1.12 °C.
