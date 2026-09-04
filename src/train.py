@@ -6,6 +6,7 @@ from src.setup_db import weatherDB
 from src.fetch_weather import get_archive
 import pickle
 import datetime as dt
+import matplotlib.pyplot as plt
 
 def train_model(dburl: str, archive_dict: dict, seed) -> pd.DataFrame:
 
@@ -24,7 +25,6 @@ def train_model(dburl: str, archive_dict: dict, seed) -> pd.DataFrame:
     df["hour_cos"] = np.cos(2 * np.pi * df["hour"] / 24)
 
     # get archive data based on the provided start and end dates
-    print(archive_dict["start_date"], archive_dict["end_date"])
     df_archive = df[df["time"].dt.date.between(archive_dict["start_date"], archive_dict["end_date"])].copy()
 
 
@@ -51,7 +51,7 @@ def train_model(dburl: str, archive_dict: dict, seed) -> pd.DataFrame:
     # evaluate
     preds = model.predict(X_test)
     mae = np.mean(np.abs(preds - y_test))
-    print(f"Test MAE: {mae:.2f} °C")
+
 
     # save model results as dict
     results = {
@@ -67,6 +67,30 @@ def train_model(dburl: str, archive_dict: dict, seed) -> pd.DataFrame:
     # save results
     with open (f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.txt", "w") as f:
         f.write(f"LightGBM Model trained on data from {archive_dict['start_date']} to {archive_dict['end_date']} in a period of {archive_dict['period']} days was trained with a test MAE of {mae:.2f} °C.\n")
+    print(f"Saved model results for a {archive_dict['period']} days period from {archive_dict['start_date']} to {archive_dict['end_date']} with a test MAE of {mae:.2f} °C.")
+
+    # get a test performance plot for evaluation
+    # Predicted vs. observed over test period
+    test_time = df_archive["time"].iloc[split:]
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(test_time, y_test, color="#2a78d6", linewidth=1.5, label="Actual")
+    ax.plot(test_time, preds, color="#eb6834", linewidth=1.5, label="Predicted")
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Temperature (°C)")
+    ax.set_title("Observed vs. predicted temperature (test period)")
+    ax.grid(True, color="#e0e0e0", linewidth=0.6)
+    for spine in ("top", "right"):
+        ax.spines[spine].set_visible(False)
+    ax.legend(frameon=False)
+    fig.tight_layout()
+
+    with open(f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.png", "wb") as f:
+        fig.savefig(f, format="png", dpi=300)
+    print(f"Saved test performance plot.")
+
+
+
 
     return results
 

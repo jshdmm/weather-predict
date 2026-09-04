@@ -26,3 +26,32 @@ jobs:
 
       - name: Tests
         run: pytest -v
+
+  train:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.3"
+          cache: pip
+
+      - name: Install
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -e .
+
+      - uses: iterative/setup-cml@v2
+
+      - name: Train model
+        run: make train
+
+      - name: Publish report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make results
