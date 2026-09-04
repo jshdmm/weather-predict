@@ -3,12 +3,9 @@ import pandas as pd
 import numpy as np
 import lightgbm as lgb
 from src.setup_db import weatherDB
-from src.fetch_weather import get_archive
-import pickle
-import datetime as dt
 import matplotlib.pyplot as plt
 
-def train_model(dburl: str, archive_dict: dict, seed) -> pd.DataFrame:
+def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> pd.DataFrame:
 
     # get database and data
     db = weatherDB(dburl)
@@ -45,7 +42,7 @@ def train_model(dburl: str, archive_dict: dict, seed) -> pd.DataFrame:
     y_train, y_test = y.iloc[:split], y.iloc[split:]
 
     # train the model
-    model = lgb.LGBMRegressor(n_estimators=200, random_state=125)
+    model = lgb.LGBMRegressor(n_estimators=200, random_state=seed)
     model.fit(X_train, y_train)
 
     # evaluate
