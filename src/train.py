@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import lightgbm as lgb
+import joblib
 from src.setup_db import weatherDB
 import matplotlib.pyplot as plt
 
@@ -60,6 +61,12 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> pd.DataF
         "X_test": X_test,
         "y_test": y_test,
     }
+
+    # persist the trained model so it can be picked up and shipped elsewhere
+    # (e.g. uploaded to a model registry) after this run finishes
+    model_path = f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.pkl"
+    joblib.dump(model, model_path)
+    print(f"Saved trained model to {model_path}.")
 
     # save results
     with open (f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.txt", "w") as f:
