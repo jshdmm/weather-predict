@@ -1,4 +1,5 @@
 # Packages
+import os
 import pandas as pd
 import numpy as np
 import lightgbm as lgb
@@ -7,6 +8,9 @@ from src.setup_db import weatherDB
 import matplotlib.pyplot as plt
 
 def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> pd.DataFrame:
+
+    # create results directory on fresh run (hidden in .gitignore otherwise)
+    os.makedirs("results", exist_ok=True)
 
     # get database and data
     db = weatherDB(dburl)
@@ -62,15 +66,14 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> pd.DataF
         "y_test": y_test,
     }
 
-    # persist the trained model so it can be picked up and shipped elsewhere
-    # (e.g. uploaded to a model registry) after this run finishes
+    # save model
     model_path = f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.pkl"
     joblib.dump(model, model_path)
     print(f"Saved trained model to {model_path}.")
 
     # save results
     with open (f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.txt", "w") as f:
-        f.write(f"LightGBM Model trained on data from {archive_dict['start_date']} to {archive_dict['end_date']} in a period of {archive_dict['period']} days was trained with a test MAE of {mae:.2f} °C.\n")
+        f.write(f"LightGBM Model trained on data from {archive_dict['start_date']} to {archive_dict['end_date']} in a period of {archive_dict['period']} days with a test MAE of {mae:.2f} °C.\n")
     print(f"Saved model results for a {archive_dict['period']} days period from {archive_dict['start_date']} to {archive_dict['end_date']} with a test MAE of {mae:.2f} °C.")
 
     # get a test performance plot for evaluation
