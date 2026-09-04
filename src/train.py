@@ -84,7 +84,7 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> pd.DataF
 
     with open(f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.png", "wb") as f:
         fig.savefig(f, format="png", dpi=300)
-    print(f"Saved test performance plot.")
+    print("Saved test performance plot.")
 
 
 
