@@ -22,7 +22,12 @@ jobs:
       - name: Train model
         run: make train
 
-      - name: Upload model artifact
+      - name: Upload model to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: make upload
+
+      - name: Upload run artifact
         uses: actions/upload-artifact@v4
         with:
           name: model-${{ github.run_id }}

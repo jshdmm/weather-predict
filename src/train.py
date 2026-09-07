@@ -1,13 +1,12 @@
 # Packages
 import os
-import pandas as pd
 import numpy as np
 import lightgbm as lgb
 import joblib
 from src.setup_db import weatherDB
 import matplotlib.pyplot as plt
 
-def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> pd.DataFrame:
+def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
 
     # create results directory on fresh run (hidden in .gitignore otherwise)
     os.makedirs("results", exist_ok=True)

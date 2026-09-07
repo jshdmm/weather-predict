@@ -1,5 +1,6 @@
 DBURL ?= sqlite:///weather.db
 PERIOD ?= 730
+MODEL_REPO_ID ?= jshdmm/weather-predict-berlin
 
 install:
 	pip install --upgrade pip &&\
@@ -10,6 +11,9 @@ format:
 
 train:
 	python -m src.main --dburl $(DBURL) --period $(PERIOD)
+
+upload:
+	python -m src.upload_model --repo-id $(MODEL_REPO_ID)
 
 results:
 	@latest_txt=$$(ls -t results/model_*.txt | head -n 1); \
@@ -22,4 +26,4 @@ results:
 	echo "![Test Evaluation]($$latest_png)" >> results.md; \
 	cml comment create results.md
 
-.PHONY: install format train results
+.PHONY: install format train upload results
