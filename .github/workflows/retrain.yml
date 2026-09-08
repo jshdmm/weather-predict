@@ -19,8 +19,18 @@ jobs:
       - name: Install
         run: make install
 
+      - name: Pull weather.db from Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: make db-pull
+
       - name: Train model
         run: make train
+
+      - name: Push weather.db to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: make db-push
 
       - name: Upload model to Hugging Face
         env:

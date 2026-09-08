@@ -1,12 +1,17 @@
 import glob
+from datetime import datetime, timezone
 from fastapi import FastAPI
 from src.setup_db import weatherDB
 from src.features import FEATURE_COLS, add_time_features
 from src.upload_model import download_latest_model, DEFAULT_REPO_ID
+from src.sync_db import download_weather_db
 
 app = FastAPI()
 
 DB_URL = "sqlite:///weather.db"
+
+# pull the shared weather.db (written by the retrain cronjob) once at startup
+download_weather_db()
 
 
 
@@ -56,4 +61,23 @@ def predict():
         "predicted_temp_open_meteo": round(float(df["temperature_2m"].iloc[0]), 2),
         "results": results,
     }
+
+# forecast endpoint: predictions for upcoming days, already computed and
+# stored by the retrain cronjob (src/main.py -> fetch_forecast_data), so
+# this just reads them back instead of calling Open-Meteo live
+@app.get("/forecast")
+def forecast():
+    db = weatherDB(DB_URL)
+    df = db.get_weather_data().sort_values("time")
+
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    upcoming = df[df["predicted_temperature_2m"].notna() & (df["time"] >= now)]
+
+    return [
+        {
+            "time": row["time"].isoformat(),
+            "predicted_temperature_2m": round(float(row["predicted_temperature_2m"]), 2),
+        }
+        for _, row in upcoming.iterrows()
+    ]
 
