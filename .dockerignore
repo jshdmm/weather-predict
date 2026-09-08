@@ -1,0 +1,13 @@
+.venv/
+venv/
+.git/
+__pycache__/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+weather.db
+results/
+tests/
+notebooks/
+.DS_Store
