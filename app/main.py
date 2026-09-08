@@ -41,9 +41,9 @@ with open(RESULTS_PATH, "r") as f:
 def read_model_path():
     return {"model_path": MODEL_PATH}
 
-# predict endpoint to get the latest weather prediction
-@app.get("/predict")
-def predict():
+# prediction for the latest known archive row (historical data)
+@app.get("/predict/historical")
+def predict_historical():
     db = weatherDB(DB_URL)
     df = db.get_weather_data().sort_values("time")
 
@@ -62,11 +62,9 @@ def predict():
         "results": results,
     }
 
-# forecast endpoint: predictions for upcoming days, already computed and
-# stored by the retrain cronjob (src/main.py -> fetch_forecast_data), so
-# this just reads them back instead of calling Open-Meteo live
-@app.get("/forecast")
-def forecast():
+# predictions for upcoming days (forecast)
+@app.get("/predict/forecast")
+def predict_forecast():
     db = weatherDB(DB_URL)
     df = db.get_weather_data().sort_values("time")
 
