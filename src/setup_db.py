@@ -19,6 +19,7 @@ class WeatherData(Base):
     windspeed_10m = Column(Float)
     winddirection_10m = Column(Float)
     soil_temperature_0_to_7cm = Column(Float)
+    predicted_temperature_2m = Column(Float)  # model's forecast, filled in ahead of the real temperature_2m
 
 # Define the weather database class for database operations
 class weatherDB:
@@ -63,6 +64,6 @@ class weatherDB:
     def get_weather_data(self) -> pd.DataFrame:
         with orm.Session(self.engine) as session:
             query = session.query(WeatherData).all()
-        data = [(row.id, row.time, row.temperature_2m, row.relativehumidity_2m, row.rain, row.snowfall, row.windspeed_10m, row.winddirection_10m, row.soil_temperature_0_to_7cm) for row in query]
-        df = pd.DataFrame(data, columns=['id', 'time', 'temperature_2m', 'relativehumidity_2m', 'rain', 'snowfall', 'windspeed_10m', 'winddirection_10m', 'soil_temperature_0_to_7cm'])
+        data = [(row.id, row.time, row.temperature_2m, row.relativehumidity_2m, row.rain, row.snowfall, row.windspeed_10m, row.winddirection_10m, row.soil_temperature_0_to_7cm, row.predicted_temperature_2m) for row in query]
+        df = pd.DataFrame(data, columns=['id', 'time', 'temperature_2m', 'relativehumidity_2m', 'rain', 'snowfall', 'windspeed_10m', 'winddirection_10m', 'soil_temperature_0_to_7cm', 'predicted_temperature_2m'])
         return df

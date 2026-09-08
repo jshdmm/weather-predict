@@ -1,7 +1,8 @@
 import glob
 import os
 import click
-from huggingface_hub import HfApi
+import joblib
+from huggingface_hub import HfApi, hf_hub_download
 
 DEFAULT_REPO_ID = "jshdmm/weather-predict-berlin"
 
@@ -31,6 +32,15 @@ def upload_latest_model(repo_id: str = DEFAULT_REPO_ID, results_dir: str = "resu
     )
     print(f"Uploaded {latest} to https://huggingface.co/{repo_id} as model.pkl")
     return latest
+
+
+def download_latest_model(repo_id: str = DEFAULT_REPO_ID):
+    """
+    Downloads and loads the most recently uploaded model from the Hugging
+    Face Hub model repo.
+    """
+    model_path = hf_hub_download(repo_id=repo_id, filename="model.pkl")
+    return joblib.load(model_path)
 
 
 @click.command()

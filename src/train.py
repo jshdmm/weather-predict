@@ -4,6 +4,7 @@ import numpy as np
 import lightgbm as lgb
 import joblib
 from src.setup_db import weatherDB
+from src.features import FEATURE_COLS, add_time_features
 import matplotlib.pyplot as plt
 
 def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
@@ -20,24 +21,13 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
     df = df.sort_values("time").reset_index(drop=True)
 
     # get time features, sin cos since time is cyclical
-    df["hour"] = df["time"].dt.hour
-    df["dayofyear"] = df["time"].dt.dayofyear
-    df["hour_sin"] = np.sin(2 * np.pi * df["hour"] / 24)
-    df["hour_cos"] = np.cos(2 * np.pi * df["hour"] / 24)
+    df = add_time_features(df)
 
     # get archive data based on the provided start and end dates
     df_archive = df[df["time"].dt.date.between(archive_dict["start_date"], archive_dict["end_date"])].copy()
 
-
-    # all features
-    feature_cols = [
-        "relativehumidity_2m", "rain", "snowfall", "windspeed_10m",
-        "winddirection_10m", "soil_temperature_0_to_7cm",
-        "hour_sin", "hour_cos", "dayofyear",
-    ]
-
     # features, target
-    X = df_archive[feature_cols]
+    X = df_archive[FEATURE_COLS]
     y = df_archive["temperature_2m"]
 
     # time-ordered split to avoid future leakage (85% training data)
@@ -74,6 +64,10 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
     with open (f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.txt", "w") as f:
         f.write(f"LightGBM Model trained on data from {archive_dict['start_date']} to {archive_dict['end_date']} in a period of {archive_dict['period']} days with a test MAE of {mae:.2f} °C.\n")
     print(f"Saved model results for a {archive_dict['period']} days period from {archive_dict['start_date']} to {archive_dict['end_date']} with a test MAE of {mae:.2f} °C.")
+
+
+
+
 
     # get a test performance plot for evaluation
     # Predicted vs. Open-Meteo Prediction over test period
