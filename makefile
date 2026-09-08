@@ -15,6 +15,12 @@ train:
 upload:
 	python -m src.upload_model --repo-id $(MODEL_REPO_ID)
 
+db-pull:
+	python -m src.sync_db --action pull
+
+db-push:
+	python -m src.sync_db --action push
+
 results:
 	@latest_txt=$$(ls -t results/model_*.txt | head -n 1); \
 	latest_png=$$(ls -t results/model_*.png | head -n 1); \
@@ -26,4 +32,4 @@ results:
 	echo "![Test Evaluation]($$latest_png)" >> results.md; \
 	cml comment create results.md
 
-.PHONY: install format train upload results
+.PHONY: install format train upload db-pull db-push results
