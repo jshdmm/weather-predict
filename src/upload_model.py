@@ -1,5 +1,6 @@
 import glob
 import os
+import json
 import click
 import joblib
 from huggingface_hub import HfApi, hf_hub_download
@@ -9,8 +10,8 @@ DEFAULT_REPO_ID = "jshdmm/weather-predict-berlin"
 
 def upload_latest_model(repo_id: str = DEFAULT_REPO_ID, results_dir: str = "results") -> str:
     """
-    Uploads the most recently trained model (by file mtime) to a Hugging
-    Face Hub model repo.
+    Uploads the most recently trained model (by file mtime), along with its
+    matching results summary, to a Hugging Face Hub model repo.
 
     Authenticates via the HF_TOKEN environment variable (GitHub Actions Secret).
     """
@@ -21,6 +22,7 @@ def upload_latest_model(repo_id: str = DEFAULT_REPO_ID, results_dir: str = "resu
             f"No model file found in {results_dir}/ -- run training first."
         )
     latest = max(candidates, key=os.path.getmtime)
+    latest_results = latest.replace(".pkl", ".json")
 
     # Upload to Hugging Face Hub
     api = HfApi()
@@ -31,6 +33,15 @@ def upload_latest_model(repo_id: str = DEFAULT_REPO_ID, results_dir: str = "resu
         repo_type="model",
     )
     print(f"Uploaded {latest} to https://huggingface.co/{repo_id} as model.pkl")
+
+    api.upload_file(
+        path_or_fileobj=latest_results,
+        path_in_repo="results.json",
+        repo_id=repo_id,
+        repo_type="model",
+    )
+    print(f"Uploaded {latest_results} to https://huggingface.co/{repo_id} as results.json")
+
     return latest
 
 
@@ -41,6 +52,16 @@ def download_latest_model(repo_id: str = DEFAULT_REPO_ID):
     """
     model_path = hf_hub_download(repo_id=repo_id, filename="model.pkl")
     return joblib.load(model_path)
+
+
+def download_latest_results(repo_id: str = DEFAULT_REPO_ID) -> dict:
+    """
+    Downloads and parses the results summary uploaded alongside the model --
+    the counterpart to the results.json half of upload_latest_model.
+    """
+    results_path = hf_hub_download(repo_id=repo_id, filename="results.json")
+    with open(results_path, "r") as f:
+        return json.load(f)
 
 
 @click.command()

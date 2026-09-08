@@ -1,5 +1,6 @@
 # Packages
 import os
+import json
 import numpy as np
 import lightgbm as lgb
 import joblib
@@ -60,10 +61,19 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
     joblib.dump(model, model_path)
     print(f"Saved trained model to {model_path}.")
 
-    # save results
-    with open (f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.txt", "w") as f:
-        f.write(f"LightGBM Model trained on data from {archive_dict['start_date']} to {archive_dict['end_date']} in a period of {archive_dict['period']} days with a test MAE of {mae:.2f} °C.\n")
-    print(f"Saved model results for a {archive_dict['period']} days period from {archive_dict['start_date']} to {archive_dict['end_date']} with a test MAE of {mae:.2f} °C.")
+    # save results as a structured summary (used by the API and CI report)
+    summary_text = f"LightGBM Model trained on data from {archive_dict['start_date']} to {archive_dict['end_date']} in a period of {archive_dict['period']} days with a test MAE of {mae:.2f} °C."
+    results_summary = {
+        "model_type": "LightGBM",
+        "period_days": archive_dict["period"],
+        "start_date": str(archive_dict["start_date"]),
+        "end_date": str(archive_dict["end_date"]),
+        "mae": round(float(mae), 2),
+        "summary": summary_text,
+    }
+    with open(f"results/model_{archive_dict['start_date']}_{archive_dict['end_date']}.json", "w") as f:
+        json.dump(results_summary, f, indent=2)
+    print(summary_text)
 
 
 

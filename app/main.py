@@ -1,9 +1,8 @@
-import glob
 from datetime import datetime, timezone
 from fastapi import FastAPI
 from src.setup_db import weatherDB
 from src.features import FEATURE_COLS, add_time_features
-from src.upload_model import download_latest_model, DEFAULT_REPO_ID
+from src.upload_model import download_latest_model, download_latest_results, DEFAULT_REPO_ID
 from src.sync_db import download_weather_db
 
 app = FastAPI()
@@ -29,12 +28,8 @@ def read_root():
 model = download_latest_model()
 MODEL_PATH = f"hf://{DEFAULT_REPO_ID}/model.pkl"
 
-# get results path
-RESULTS_PATH = sorted(glob.glob("results/model*.txt"))[-1]
-
-# read results
-with open(RESULTS_PATH, "r") as f:
-    results = f.read()
+# load the results summary uploaded alongside the model
+results = download_latest_results()
 
 # check model path
 @app.get("/model_path")

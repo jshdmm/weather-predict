@@ -22,11 +22,11 @@ db-push:
 	python -m src.sync_db --action push
 
 results:
-	@latest_txt=$$(ls -t results/model_*.txt | head -n 1); \
+	@latest_json=$$(ls -t results/model_*.json | head -n 1); \
 	latest_png=$$(ls -t results/model_*.png | head -n 1); \
 	echo "## Model Metrics" > results.md; \
 	echo "" >> results.md; \
-	cat $$latest_txt >> results.md; \
+	python -c "import json; print(json.load(open('$$latest_json'))['summary'])" >> results.md; \
 	echo "" >> results.md; \
 	echo "## Test Evaluation Plot" >> results.md; \
 	echo "![Test Evaluation]($$latest_png)" >> results.md; \
