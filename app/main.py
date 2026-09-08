@@ -41,6 +41,11 @@ with open(RESULTS_PATH, "r") as f:
 def read_model_path():
     return {"model_path": MODEL_PATH}
 
+# entry for predict route
+@app.get("/predict/")
+def predict():
+    return("Please select predict/historical for a historical model prediction for Open Meteo archive weather data and predict/forecast for a weather forecast for the upcoming days.")
+
 # prediction for the latest known archive row (historical data)
 @app.get("/predict/historical")
 def predict_historical():
