@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from fastapi import FastAPI
 from src.setup_db import weatherDB
 from src.features import FEATURE_COLS, add_time_features
@@ -41,14 +40,18 @@ def read_model_path():
 def predict():
     return("Please select predict/historical for a historical model prediction for Open Meteo archive weather data and predict/forecast for a weather forecast for the upcoming days.")
 
-# prediction for the latest known archive row (historical data)
+# prediction for the latest known archive row (historical data), i.e. as of
+# the day the cronjob last retrained -- rows only have a real
+# temperature_2m once the archive fetch has confirmed them, so filtering on
+# that (rather than just taking the last row by time) skips over the
+# forecast-only rows that extend further into the future
 @app.get("/predict/historical")
 def predict_historical():
     db = weatherDB(DB_URL)
     df = db.get_weather_data().sort_values("time")
 
-    # get latest row and add time features
-    latest = df.iloc[[-1]]
+    historical = df[df["temperature_2m"].notna()]
+    latest = historical.iloc[[-1]]
     latest = add_time_features(latest)
 
     # get prediction
@@ -58,18 +61,20 @@ def predict_historical():
         "model_path": MODEL_PATH,
         "time": latest["time"].iloc[0].isoformat(),
         "predicted_temp_model": round(float(pred), 2),
-        "predicted_temp_open_meteo": round(float(df["temperature_2m"].iloc[0]), 2),
+        "predicted_temp_open_meteo": round(float(latest["temperature_2m"].iloc[0]), 2),
         "results": results,
     }
 
-# predictions for upcoming days (forecast)
+# predictions for upcoming days (forecast), starting right where historical
+# data ends -- the same day-of-retraining boundary as /predict/historical,
+# instead of the server's wall-clock time, so both endpoints agree
 @app.get("/predict/forecast")
 def predict_forecast():
     db = weatherDB(DB_URL)
     df = db.get_weather_data().sort_values("time")
 
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
-    upcoming = df[df["predicted_temperature_2m"].notna() & (df["time"] >= now)]
+    last_known_time = df.loc[df["temperature_2m"].notna(), "time"].max()
+    upcoming = df[df["predicted_temperature_2m"].notna() & (df["time"] > last_known_time)]
 
     return [
         {
