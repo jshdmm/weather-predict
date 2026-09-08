@@ -1,6 +1,5 @@
 import glob
 from fastapi import FastAPI
-from pydantic import BaseModel
 from src.setup_db import weatherDB
 from src.features import FEATURE_COLS, add_time_features
 from src.upload_model import download_latest_model, DEFAULT_REPO_ID
