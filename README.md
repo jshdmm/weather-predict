@@ -1,4 +1,4 @@
-# MLOps Project for Predicting Weather in Berlin
+# CI/CD Project for Weather Prediction in Berlin (MLOps focus)
 
 This project was created as an extension of my [ELT pipepline project](https://github.com/phipsrick/GA2024_1) which covered integrating weather data with different IoT sensors from a Dutch household. I wanted to learn using CI/CD with GitHub Actions and deploying a simple ensemble-based model on Hugging Face, containerized with Docker and served through FastAPI. Besides reading through docs and tutorials, I used Claude Code as an assistant to work through the project. In doing so, I was still making relevant decisions myself (also see the commit history to follow along the project trajectory).
 
