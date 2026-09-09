@@ -2,11 +2,8 @@
 
 This project was created as an extension of my [ELT pipepline project](https://github.com/phipsrick/GA2024_1) which covered integrating weather data with different IoT sensors from a Dutch household. I wanted to learn using CI/CD with GitHub Actions and deploying a simple ensemble-based model on Hugging Face, containerized with Docker and served through FastAPI. Besides reading through docs and tutorials, I used Claude Code as an assistant to work through the project. In doing so, I was still making relevant decisions myself (also see the commit history to follow along the project trajectory).
 
-An end-to-end **MLOps** project: a LightGBM model that predicts temperature for Berlin/Tempelhof, retrained daily on fresh weather data, served through a containerized FastAPI API. The focus here isn't the model itself (a gradient-boosted tree on a handful of weather features) — it's the pipeline around it: automated retraining, a model/data registry, reproducible reporting, and stateless serving.
+At this point of time, the container is not running live at HF. Future steps include creating a live model URL, add more automated tests and logs for training, API endpoints, and model drift, as well as some visualizations. Furthermore, instead of using the Open-Meteo predictions as a benchmark comparison, a ground-truth data source could be established by including real-time measurements from stations run by the Deutscher Wetterdienst (DWD).
 
-## Why this project
-
-Built to practice the operational side of ML that tutorials usually skip: what happens *after* `model.fit()`. Specifically — how do you keep a model current without manual intervention, where does "the current model" actually live, how do multiple environments (a laptop, a CI runner, a container) agree on the same data and model version, and how do you serve predictions without silently depending on whatever happens to be on one developer's disk.
 
 ## Architecture
 
@@ -30,7 +27,7 @@ Open-Meteo Forecast API ─┘         │                    (shared, synced pu
               /predict/historical   /predict/forecast
 ```
 
-Everything the API needs — the trained model, its evaluation metrics, and the database — is pulled from Hugging Face at container startup. The image itself carries no local model file, no local database, and no training artifacts; verified by running it in a directory containing nothing but the application code.
+Everything the API needs (model, evaluation metrics, results) is pulled from Hugging Face at container startup. The image itself carries no local model file, no local database, and no training artifacts; verified by running it in a directory containing nothing but the application code.
 
 ## MLOps components
 
@@ -51,7 +48,7 @@ Everything the API needs — the trained model, its evaluation metrics, and the 
 | `GET /predict/forecast` | Model's predictions for the upcoming week, derived from Open-Meteo's forecast features |
 | `GET /model_path` | Which model artifact is currently loaded |
 
-## Running it
+## Getting Started
 
 **Locally:**
 ```bash
