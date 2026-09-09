@@ -2,7 +2,7 @@
 
 This project was created as an extension of my [ELT pipepline project](https://github.com/phipsrick/GA2024_1) which covered integrating weather data with different IoT sensors from a Dutch household. I wanted to learn using CI/CD with GitHub Actions and deploying a simple ensemble-based model on Hugging Face, containerized with Docker and served through FastAPI. Besides reading through docs and tutorials, I used Claude Code as an assistant to work through the project. In doing so, I was still making relevant decisions myself (also see the commit history to follow along the project trajectory).
 
-At this point of time, the container is not running live at HF. Future steps include creating a live model URL, add more automated tests and logs for training, API endpoints, and model drift, as well as some visualizations. Furthermore, instead of using the Open-Meteo predictions as a benchmark comparison, a ground-truth data source could be established by including real-time measurements from stations run by the Deutscher Wetterdienst (DWD).
+At this point in time, the container is not running live at HF. Future steps include creating a live model URL, add more automated tests and logs for training, API endpoints, and model drift, as well as some visualizations. Furthermore, instead of using the Open-Meteo predictions as a benchmark comparison, a ground-truth data source could be established by including real-time measurements from stations run by the Deutscher Wetterdienst (DWD).
 
 
 ## Architecture
