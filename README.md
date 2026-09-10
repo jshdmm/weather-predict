@@ -63,11 +63,13 @@ docker run -p 8000:8000 weather-predict-api
 ```
 No credentials needed to run the API — the model and database repos are public reads. A `HF_TOKEN` (write-scoped) is only required for the training/retraining side, which writes back to Hugging Face.
 
-**Training/retraining manually:**
+**Training/retraining manually** (runs on your host machine with the local Python environment activated — not inside the container; the container only serves the API):
 ```bash
-make train      # fetch archive + forecast data, retrain, store forecast predictions
-make upload      # push model.pkl + results.json to the model repo
-make db-push     # push the updated weather.db to the dataset repo
+source .venv/bin/activate   # or your venv's equivalent
+make db-pull     # optional: pull the current shared weather.db first
+make train       # fetch archive + forecast data, retrain, store forecast predictions
+make upload      # push model.pkl + results.json to the model repo (needs HF_TOKEN)
+make db-push     # push the updated weather.db to the dataset repo (needs HF_TOKEN)
 ```
 
 ## Tech stack

@@ -84,11 +84,11 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
     test_time = df_archive["time"].iloc[split:]
 
     fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(test_time, y_test, color="#2a78d6", linewidth=1.5, label="Open-Meteo Prediction")
-    ax.plot(test_time, preds, color="#eb6834", linewidth=1.5, label="Predicted")
+    ax.plot(test_time, y_test, color="#2a78d6", linewidth=1.5, label="Open-Meteo")
+    ax.plot(test_time, preds, color="#eb6834", linewidth=1.5, label="LightGBM")
     ax.set_xlabel("Time")
     ax.set_ylabel("Temperature (°C)")
-    ax.set_title("Open-Meteo Prediction vs. predicted temperature (test period)")
+    ax.set_title("Open-Meteo Prediction vs. LightGBM temperature prediction (test period)")
     ax.grid(True, color="#e0e0e0", linewidth=0.6)
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
