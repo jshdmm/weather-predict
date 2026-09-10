@@ -91,7 +91,7 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
     ax.plot([], [], ' ', label=f"Test MAE: {mae:.2f} °C")
     ax.set_xlabel("Time")
     ax.set_ylabel("Temperature (°C)")
-    ax.set_title("Open-Meteo Prediction vs. LightGBM temperature prediction (test period)")
+    ax.set_title("Open-Meteo vs. LightGBM Temperature Prediction (Test Period)")
     ax.grid(True, color="#e0e0e0", linewidth=0.6)
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
