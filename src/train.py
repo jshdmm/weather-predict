@@ -86,6 +86,9 @@ def train_model(dburl: str, archive_dict: dict, seed: int = 4036018) -> dict:
     fig, ax = plt.subplots(figsize=(10, 4))
     ax.plot(test_time, y_test, color="#2a78d6", linewidth=1.5, label="Open-Meteo")
     ax.plot(test_time, preds, color="#eb6834", linewidth=1.5, label="LightGBM")
+    # invisible line: no visible marker/linestyle, just adds a text-only
+    # entry to the legend below
+    ax.plot([], [], ' ', label=f"Test MAE: {mae:.2f} °C")
     ax.set_xlabel("Time")
     ax.set_ylabel("Temperature (°C)")
     ax.set_title("Open-Meteo Prediction vs. LightGBM temperature prediction (test period)")
