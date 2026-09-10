@@ -23,8 +23,12 @@ def upload_latest_model(repo_id: str = DEFAULT_REPO_ID, results_dir: str = "resu
         )
     latest = max(candidates, key=os.path.getmtime)
     latest_results = latest.replace(".pkl", ".json")
+    latest_plot = latest.replace(".pkl", ".png")
+
 
     # Upload to Hugging Face Hub
+    
+    ## model
     api = HfApi()
     api.upload_file(
         path_or_fileobj=latest,
@@ -34,6 +38,7 @@ def upload_latest_model(repo_id: str = DEFAULT_REPO_ID, results_dir: str = "resu
     )
     print(f"Uploaded {latest} to https://huggingface.co/{repo_id} as model.pkl")
 
+    ## results
     api.upload_file(
         path_or_fileobj=latest_results,
         path_in_repo="results.json",
@@ -41,6 +46,17 @@ def upload_latest_model(repo_id: str = DEFAULT_REPO_ID, results_dir: str = "resu
         repo_type="model",
     )
     print(f"Uploaded {latest_results} to https://huggingface.co/{repo_id} as results.json")
+
+    
+
+    ## plot
+    api.upload_file(
+            path_or_fileobj=latest_plot,
+            path_in_repo="plot.png",
+            repo_id=repo_id,
+            repo_type="model",
+        )
+    print(f"Uploaded {latest_plot} to https://huggingface.co/{repo_id} as plot.png")
 
     return latest
 
